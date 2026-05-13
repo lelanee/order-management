@@ -1,5 +1,6 @@
 package com.lantranle.order.controller;
 
+import com.lantranle.order.dto.ProductListRequest;
 import com.lantranle.order.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,7 @@ public class ProductPageController {
 
     @GetMapping({"/", "/products"})
     public String getProductsPage(Model model) {
-        model.addAttribute("products", productService.getProducts());
+        model.addAttribute("products", productService.listProducts(new ProductListRequest()).getContent());
         return "products";
     }
 }

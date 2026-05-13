@@ -17,7 +17,7 @@ public class ProductMapper {
                 .price(request.getPrice())
                 .stockQuantity(request.getStockQuantity())
                 .imageUrl(request.getImageUrl())
-                .active(request.getActive())
+                .active(request.getActive() != null ? request.getActive() : true)
                 .build();
     }
 
@@ -27,7 +27,7 @@ public class ProductMapper {
         product.setPrice(request.getPrice());
         product.setStockQuantity(request.getStockQuantity());
         product.setImageUrl(request.getImageUrl());
-        product.setActive(request.getActive());
+        product.setActive(request.getActive() != null ? request.getActive() : product.getActive());
     }
 
     public ProductListResponse toProductListResponse(Product product) {

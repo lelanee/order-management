@@ -3,11 +3,18 @@ spring:
     name: order
   datasource:
     url: jdbc:postgresql://localhost:5432/order_db
-    username: order_user
-    password: order_password
+    username: ${DB_USER:order_user}
+    password: ${DB_PASSWORD:order_password}
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+
+springdoc:
+  open-api:
+    info:
+      title: Order Management API
+      version: "1.0"
+      description: APIs for managing products and orders
