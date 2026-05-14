@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -55,4 +56,7 @@ public class Product {
   @Column(nullable = false)
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
+  @Version
+  private Long version;
 }

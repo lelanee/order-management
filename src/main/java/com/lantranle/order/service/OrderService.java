@@ -11,10 +11,12 @@ import com.lantranle.order.entity.Product;
 import com.lantranle.order.mapper.OrderMapper;
 import com.lantranle.order.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.OptimisticLockException;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,6 +87,19 @@ public class OrderService {
     }
 
     order.setTotalAmount(totalAmount);
+
+    try {
+      return orderMapper.toOrderDetailResponse(orderRepository.saveAndFlush(order));
+    } catch (ObjectOptimisticLockingFailureException | OptimisticLockException exception) {
+      throw new IllegalArgumentException("Product stock changed while creating the order. Please try again.");
+    }
+  }
+
+  @Transactional
+  public OrderDetailResponse updateStatus(Long id, OrderStatus status) {
+    Order order = findOrderById(id);
+    order.setStatus(status);
+
     return orderMapper.toOrderDetailResponse(orderRepository.save(order));
   }
 

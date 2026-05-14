@@ -48,6 +48,8 @@
         </select>
       </div>
       <div class="col-md-3 d-flex gap-2">
+        <input type="hidden" name="page" value="0">
+        <input type="hidden" th:field="*{size}">
         <button class="btn btn-primary flex-fill" type="submit">Filter</button>
         <a class="btn btn-outline-secondary" th:href="@{/admin/products}">Reset</a>
       </div>
@@ -93,6 +95,37 @@
         </tr>
         </tbody>
       </table>
+    </div>
+    <div class="card-footer bg-white d-flex flex-wrap align-items-center justify-content-between gap-3"
+         th:if="${productPage.totalPages > 0}">
+      <span class="text-secondary small">
+        Showing page <span th:text="${productPage.page + 1}">1</span>
+        of <span th:text="${productPage.totalPages}">1</span>
+        (<span th:text="${productPage.totalElements}">0</span> products)
+      </span>
+      <nav aria-label="Product pagination" th:if="${productPage.totalPages > 1}">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" th:classappend="${productPage.page == 0} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/admin/products(name=${filter.name},active=${filter.active},page=${productPage.page - 1},size=${productPage.size})}">
+              Previous
+            </a>
+          </li>
+          <li class="page-item"
+              th:each="pageNumber : ${#numbers.sequence(0, productPage.totalPages - 1)}"
+              th:classappend="${pageNumber == productPage.page} ? 'active'">
+            <a class="page-link"
+               th:text="${pageNumber + 1}"
+               th:href="@{/admin/products(name=${filter.name},active=${filter.active},page=${pageNumber},size=${productPage.size})}">1</a>
+          </li>
+          <li class="page-item" th:classappend="${productPage.last} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/admin/products(name=${filter.name},active=${filter.active},page=${productPage.page + 1},size=${productPage.size})}">
+              Next
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </section>
 </main>

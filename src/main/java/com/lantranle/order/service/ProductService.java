@@ -29,11 +29,6 @@ public class ProductService {
 
   @Transactional(readOnly = true)
   public PageResponse<ProductListResponse> listProducts(ProductListRequest request) {
-    return listProductsForAdmin(request);
-  }
-
-  @Transactional(readOnly = true)
-  public PageResponse<ProductListResponse> listProductsForAdmin(ProductListRequest request) {
     Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("id").ascending());
     Page<ProductListResponse> products = productRepository.findAll(ProductSpecification.filterBy(request), pageable)
       .map(productMapper::toProductListResponse);
@@ -55,11 +50,6 @@ public class ProductService {
   @Transactional(readOnly = true)
   public ProductDetailResponse getProductById(Long id) {
     return productMapper.toProductDetailResponse(findProductById(id));
-  }
-
-  @Transactional(readOnly = true)
-  public Product getProductEntityById(Long id) {
-    return findProductById(id);
   }
 
   @Transactional(readOnly = true)

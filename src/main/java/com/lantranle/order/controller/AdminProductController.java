@@ -4,6 +4,8 @@ import com.lantranle.order.dto.ProductCreateRequest;
 import com.lantranle.order.dto.ProductDetailResponse;
 import com.lantranle.order.dto.ProductListRequest;
 import com.lantranle.order.dto.ProductUpdateRequest;
+import com.lantranle.order.dto.PageResponse;
+import com.lantranle.order.dto.ProductListResponse;
 import com.lantranle.order.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,10 @@ public class AdminProductController {
 
   @GetMapping
   public String listProducts(@Valid @ModelAttribute("filter") ProductListRequest filter, Model model) {
-    model.addAttribute("products", productService.listProductsForAdmin(filter).getContent());
+    PageResponse<ProductListResponse> productPage = productService.listProducts(filter);
+
+    model.addAttribute("productPage", productPage);
+    model.addAttribute("products", productPage.getContent());
     return "admin/products";
   }
 

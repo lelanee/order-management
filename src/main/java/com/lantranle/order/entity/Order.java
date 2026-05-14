@@ -8,8 +8,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,7 +25,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+  @Index(name = "idx_orders_status_created_at", columnList = "status, created_at")
+})
 @Getter
 @Setter
 @Builder
@@ -70,4 +74,7 @@ public class Order {
   @Column(nullable = false)
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
+  @Version
+  private Long version;
 }
