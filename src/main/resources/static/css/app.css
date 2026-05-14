@@ -28,3 +28,50 @@ body {
 .btn {
   border-radius: 6px;
 }
+
+.auth-shell {
+  align-items: center;
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  max-width: 420px;
+  width: 100%;
+}
+
+.form-card {
+  max-width: 900px;
+}
+
+.product-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.product-card {
+  overflow: hidden;
+}
+
+.product-thumb,
+.product-image,
+.image-placeholder {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  width: 100%;
+}
+
+.product-image {
+  border-radius: 8px;
+}
+
+.image-placeholder {
+  align-items: center;
+  background: #eef2f7;
+  color: #6b7280;
+  display: flex;
+  justify-content: center;
+}

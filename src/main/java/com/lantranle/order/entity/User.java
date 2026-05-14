@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
@@ -26,7 +25,6 @@ import org.hibernate.annotations.UpdateTimestamp;
     @UniqueConstraint(name = "uk_users_username", columnNames = "username"),
     @UniqueConstraint(name = "uk_users_email", columnNames = "email")
   })
-@SQLRestriction("active = true")
 @Getter
 @Setter
 @Builder
@@ -50,17 +48,17 @@ public class User {
   @Column(nullable = false, length = 150)
   private String fullName;
 
-    @Column(length = 20)
-    private String phoneNumber;
+  @Column(length = 20)
+  private String phoneNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    @Builder.Default
-    private UserRole role = UserRole.USER;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  @Builder.Default
+  private UserRole role = UserRole.USER;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean active = true;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean active = true;
 
   @Column(nullable = false, updatable = false)
   @CreationTimestamp

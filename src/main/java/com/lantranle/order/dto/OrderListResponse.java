@@ -1,6 +1,7 @@
 package com.lantranle.order.dto;
 
-import com.lantranle.order.entity.UserRole;
+import com.lantranle.order.entity.OrderStatus;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,23 +14,19 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetailResponse {
+public class OrderListResponse {
 
   private Long id;
 
-  private String username;
+  private String customerName;
 
-  private String email;
+  private String customerPhone;
 
-  private String fullName;
+  private String customerEmail;
 
-  private String phoneNumber;
+  private OrderStatus status;
 
-  private UserRole role;
-
-  private Boolean active;
+  private BigDecimal totalAmount;
 
   private LocalDateTime createdAt;
-
-  private LocalDateTime updatedAt;
 }

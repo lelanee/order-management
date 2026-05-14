@@ -1,6 +1,6 @@
 package com.lantranle.order.dto;
 
-import com.lantranle.order.entity.UserRole;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,19 +12,17 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserListResponse {
+public class OrderItemResponse {
 
   private Long id;
 
-  private String username;
+  private Long productId;
 
-  private String email;
+  private String productName;
 
-  private String fullName;
+  private Integer quantity;
 
-  private String phoneNumber;
+  private BigDecimal unitPrice;
 
-  private UserRole role;
-
-  private Boolean active;
+  private BigDecimal lineTotal;
 }

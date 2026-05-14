@@ -25,6 +25,12 @@ public class GlobalExceptionHandler {
     return exception.getMessage();
   }
 
+  @ExceptionHandler(IllegalArgumentException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public String handleIllegalArgumentException(IllegalArgumentException exception) {
+    return exception.getMessage();
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public Map<String, String> handleValidationException(MethodArgumentNotValidException exception) {

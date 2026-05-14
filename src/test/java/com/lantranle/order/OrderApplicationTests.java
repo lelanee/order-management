@@ -1,7 +1,6 @@
 package com.lantranle.order;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.lantranle.order.controller.ProductController;
 import com.lantranle.order.dto.PageResponse;
@@ -13,7 +12,6 @@ import com.lantranle.order.dto.ProductUpdateRequest;
 import com.lantranle.order.entity.Product;
 import com.lantranle.order.repository.ProductRepository;
 import com.lantranle.order.service.ProductService;
-import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,8 +89,10 @@ class OrderApplicationTests {
 
 		productService.deleteProduct(createdProduct.getId());
 
-		assertThatThrownBy(() -> productService.getProductById(createdProduct.getId()))
-				.isInstanceOf(EntityNotFoundException.class);
+		assertThat(productService.getProductById(createdProduct.getId()).getActive()).isFalse();
+		assertThat(productService.listActiveProductsForShop())
+				.extracting(ProductListResponse::getId)
+				.doesNotContain(createdProduct.getId());
 	}
 
 	@Test
@@ -126,8 +126,7 @@ class OrderApplicationTests {
 
 		productController.deleteProduct(createdProduct.getId());
 
-		assertThatThrownBy(() -> productController.getProductById(createdProduct.getId()))
-				.isInstanceOf(EntityNotFoundException.class);
+		assertThat(productController.getProductById(createdProduct.getId()).getActive()).isFalse();
 	}
 
 	@Test
@@ -145,12 +144,12 @@ class OrderApplicationTests {
 		ProductListRequest request = new ProductListRequest();
 		request.setName("coca");
 		request.setPage(0);
-		request.setSize(5);
+		request.setSize(100);
 
 		PageResponse<ProductListResponse> response = productService.listProducts(request);
 
 		assertThat(response.getPage()).isZero();
-		assertThat(response.getSize()).isEqualTo(5);
+		assertThat(response.getSize()).isEqualTo(100);
 		assertThat(response.getContent())
 				.extracting(ProductListResponse::getId)
 				.contains(createdProduct.getId());
@@ -170,9 +169,8 @@ class OrderApplicationTests {
 
 		productService.deleteProduct(createdProduct.getId());
 
-		assertThatThrownBy(() -> productService.getProductById(createdProduct.getId()))
-				.isInstanceOf(EntityNotFoundException.class);
-		assertThat(productRepository.findById(createdProduct.getId())).isNotPresent();
+		assertThat(productService.getProductById(createdProduct.getId()).getActive()).isFalse();
+		assertThat(productRepository.findById(createdProduct.getId())).isPresent();
 		assertThat(jdbcTemplate.queryForObject(
 				"select active from products where id = ?",
 				Boolean.class,

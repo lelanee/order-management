@@ -30,7 +30,7 @@ public class ProductController {
 
   @GetMapping
   public PageResponse<ProductListResponse> listProducts(@Valid @ModelAttribute ProductListRequest request) {
-    return productService.listProducts(request);
+    return productService.listProductsForAdmin(request);
   }
 
   @GetMapping("/{id}")
