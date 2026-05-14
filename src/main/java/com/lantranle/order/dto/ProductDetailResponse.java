@@ -15,21 +15,21 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductDetailResponse {
 
-    private Long id;
+  private Long id;
 
-    private String name;
+  private String name;
 
-    private String description;
+  private String description;
 
-    private BigDecimal price;
+  private BigDecimal price;
 
-    private Integer stockQuantity;
+  private Integer stockQuantity;
 
-    private String imageUrl;
+  private String imageUrl;
 
-    private Boolean active;
+  private Boolean active;
 
-    private LocalDateTime createdAt;
+  private LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+  private LocalDateTime updatedAt;
 }

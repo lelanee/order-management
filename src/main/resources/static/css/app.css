@@ -1,30 +1,30 @@
 body {
-    background: #f6f7f9;
-    color: #1f2933;
+  background: #f6f7f9;
+  color: #1f2933;
 }
 
 .navbar-brand {
-    color: #008060;
+  color: #008060;
 }
 
 .card {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
 .stat-card {
-    min-height: 120px;
+  min-height: 120px;
 }
 
 .table thead th {
-    background: #f9fafb;
-    color: #6b7280;
-    font-size: 0.78rem;
-    letter-spacing: 0;
-    text-transform: uppercase;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 0.78rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
 .btn {
-    border-radius: 6px;
+  border-radius: 6px;
 }

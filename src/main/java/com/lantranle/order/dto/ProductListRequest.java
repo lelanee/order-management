@@ -7,11 +7,11 @@ import lombok.Setter;
 @Setter
 public class ProductListRequest {
 
-    private String name;
+  private String name;
 
-    private Boolean active;
+  private Boolean active;
 
-    private int page = 0;
+  private int page = 0;
 
-    private int size = 20;
+  private int size = 20;
 }

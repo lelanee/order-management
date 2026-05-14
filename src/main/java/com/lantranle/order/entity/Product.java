@@ -27,34 +27,34 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 150)
-    private String name;
+  @Column(nullable = false, length = 150)
+  private String name;
 
-    @Column(length = 1000)
-    private String description;
+  @Column(length = 1000)
+  private String description;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal price;
+  @Column(nullable = false, precision = 12, scale = 2)
+  private BigDecimal price;
 
-    @Column(nullable = false)
-    private Integer stockQuantity;
+  @Column(nullable = false)
+  private Integer stockQuantity;
 
-    @Column(length = 500)
-    private String imageUrl;
+  @Column(length = 500)
+  private String imageUrl;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean active = true;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean active = true;
 
-    @Column(nullable = false, updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+  @Column(nullable = false, updatable = false)
+  @CreationTimestamp
+  private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+  @Column(nullable = false)
+  @UpdateTimestamp
+  private LocalDateTime updatedAt;
 }

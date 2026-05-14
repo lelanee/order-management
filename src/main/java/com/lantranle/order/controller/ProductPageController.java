@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 public class ProductPageController {
 
-    private final ProductService productService;
+  private final ProductService productService;
 
-    @GetMapping({"/", "/products"})
-    public String getProductsPage(Model model) {
-        model.addAttribute("products", productService.listProducts(new ProductListRequest()).getContent());
-        return "products";
-    }
+  @GetMapping({"/", "/products"})
+  public String getProductsPage(Model model) {
+    model.addAttribute("products", productService.listProducts(new ProductListRequest()).getContent());
+    return "products";
+  }
 }

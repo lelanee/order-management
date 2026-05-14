@@ -19,23 +19,23 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProductUpdateRequest {
 
-    @NotBlank(message = "Product name is required")
-    @Size(max = 150, message = "Product name must not exceed 150 characters")
-    private String name;
+  @NotBlank(message = "Product name is required")
+  @Size(max = 150, message = "Product name must not exceed 150 characters")
+  private String name;
 
-    @Size(max = 1000, message = "Description must not exceed 1000 characters")
-    private String description;
+  @Size(max = 1000, message = "Description must not exceed 1000 characters")
+  private String description;
 
-    @NotNull(message = "Price is required")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
-    private BigDecimal price;
+  @NotNull(message = "Price is required")
+  @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
+  private BigDecimal price;
 
-    @NotNull(message = "Stock quantity is required")
-    @Min(value = 0, message = "Stock quantity must be greater than or equal to 0")
-    private Integer stockQuantity;
+  @NotNull(message = "Stock quantity is required")
+  @Min(value = 0, message = "Stock quantity must be greater than or equal to 0")
+  private Integer stockQuantity;
 
-    @Size(max = 500, message = "Image URL must not exceed 500 characters")
-    private String imageUrl;
+  @Size(max = 500, message = "Image URL must not exceed 500 characters")
+  private String imageUrl;
 
-    private Boolean active;
+  private Boolean active;
 }

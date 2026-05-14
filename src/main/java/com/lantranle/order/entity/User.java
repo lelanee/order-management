@@ -19,11 +19,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(
-        name = "users",
-        uniqueConstraints = {
-            @UniqueConstraint(name = "uk_users_username", columnNames = "username"),
-            @UniqueConstraint(name = "uk_users_email", columnNames = "email")
-        })
+  name = "users",
+  uniqueConstraints = {
+    @UniqueConstraint(name = "uk_users_username", columnNames = "username"),
+    @UniqueConstraint(name = "uk_users_email", columnNames = "email")
+  })
 @SQLRestriction("active = true")
 @Getter
 @Setter
@@ -32,34 +32,34 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String username;
+  @Column(nullable = false, length = 100)
+  private String username;
 
-    @Column(nullable = false, length = 150)
-    private String email;
+  @Column(nullable = false, length = 150)
+  private String email;
 
-    @Column(nullable = false, length = 255)
-    private String password;
+  @Column(nullable = false, length = 255)
+  private String password;
 
-    @Column(nullable = false, length = 150)
-    private String fullName;
+  @Column(nullable = false, length = 150)
+  private String fullName;
 
-    @Column(length = 20)
-    private String phoneNumber;
+  @Column(length = 20)
+  private String phoneNumber;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean active = true;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean active = true;
 
-    @Column(nullable = false, updatable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+  @Column(nullable = false, updatable = false)
+  @CreationTimestamp
+  private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+  @Column(nullable = false)
+  @UpdateTimestamp
+  private LocalDateTime updatedAt;
 }
