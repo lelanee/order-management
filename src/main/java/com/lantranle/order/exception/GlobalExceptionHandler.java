@@ -1,6 +1,7 @@
 package com.lantranle.order.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityExistsException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(EntityNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public String handleEntityNotFoundException(EntityNotFoundException exception) {
+    return exception.getMessage();
+  }
+
+  @ExceptionHandler(EntityExistsException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public String handleEntityExistsException(EntityExistsException exception) {
     return exception.getMessage();
   }
 
