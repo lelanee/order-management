@@ -6,9 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.lantranle.order.dto.OrderCreateRequest;
 import com.lantranle.order.dto.OrderItemCreateRequest;
 import com.lantranle.order.dto.ProductRequest;
+import com.lantranle.order.dto.RegisterRequest;
 import com.lantranle.order.entity.Order;
 import com.lantranle.order.entity.OrderStatus;
 import com.lantranle.order.entity.Product;
+import com.lantranle.order.entity.UserRole;
+import com.lantranle.order.repository.UserRepository;
+import com.lantranle.order.controller.RegistrationController;
 import com.lantranle.order.repository.OrderRepository;
 import com.lantranle.order.repository.ProductRepository;
 import com.lantranle.order.service.OrderService;
@@ -22,6 +26,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.validation.BeanPropertyBindingResult;
 
 @SpringBootTest
 class OrderApplicationTests {
@@ -31,6 +37,12 @@ class OrderApplicationTests {
 
 	@Autowired
 	private OrderRepository orderRepository;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private RegistrationController registrationController;
 
 	@Autowired
 	private ProductService productService;
@@ -64,6 +76,47 @@ class OrderApplicationTests {
 				.get()
 				.extracting(Product::getName)
 				.isEqualTo("Test Product");
+	}
+
+	@Test
+	void registrationCreatesActiveUserAccount() {
+		RegisterRequest request = RegisterRequest.builder()
+				.username("newuser" + System.nanoTime())
+				.email("newuser" + System.nanoTime() + "@example.com")
+				.password("secret123")
+				.fullName("New User")
+				.phoneNumber("0909000000")
+				.build();
+		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(request, "registerRequest");
+
+		String view = registrationController.register(request, bindingResult, new MockHttpServletRequest());
+
+		assertThat(view).isEqualTo("redirect:/");
+		assertThat(bindingResult.hasErrors()).isFalse();
+		assertThat(userRepository.findByUsername(request.getUsername()))
+				.isPresent()
+				.get()
+				.satisfies(user -> {
+					assertThat(user.getRole()).isEqualTo(UserRole.USER);
+					assertThat(user.getActive()).isTrue();
+					assertThat(user.getPassword()).isNotEqualTo("secret123");
+				});
+	}
+
+	@Test
+	void registrationRejectsDuplicateUsername() {
+		RegisterRequest request = RegisterRequest.builder()
+				.username("admin")
+				.email("admin-copy" + System.nanoTime() + "@example.com")
+				.password("secret123")
+				.fullName("Admin Copy")
+				.build();
+		BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(request, "registerRequest");
+
+		String view = registrationController.register(request, bindingResult, new MockHttpServletRequest());
+
+		assertThat(view).isEqualTo("register");
+		assertThat(bindingResult.hasFieldErrors("username")).isTrue();
 	}
 
 	@Test
