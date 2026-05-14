@@ -12,9 +12,3 @@ spring:
       hibernate:
         format_sql: true
 
-springdoc:
-  open-api:
-    info:
-      title: Order Management API
-      version: "1.0"
-      description: APIs for managing products and orders

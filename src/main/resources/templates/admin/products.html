@@ -33,23 +33,23 @@
     <a class="btn btn-success" th:href="@{/admin/products/new}">Add product</a>
   </section>
 
-  <form class="card mb-4" th:action="@{/admin/products}" method="get" th:object="${filter}">
+  <form class="card mb-4" th:action="@{/admin/products}" method="get">
     <div class="card-body row g-3 align-items-end">
       <div class="col-md-6">
         <label class="form-label" for="name">Name</label>
-        <input class="form-control" id="name" type="text" th:field="*{name}" placeholder="Search by product name">
+        <input class="form-control" id="name" name="name" type="text" th:value="${name}" placeholder="Search by product name">
       </div>
       <div class="col-md-3">
         <label class="form-label" for="active">Status</label>
-        <select class="form-select" id="active" th:field="*{active}">
+        <select class="form-select" id="active" name="active">
           <option value="">All</option>
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
+          <option value="true" th:selected="${active == true}">Active</option>
+          <option value="false" th:selected="${active == false}">Inactive</option>
         </select>
       </div>
       <div class="col-md-3 d-flex gap-2">
         <input type="hidden" name="page" value="0">
-        <input type="hidden" th:field="*{size}">
+        <input type="hidden" name="size" th:value="${page.size}">
         <button class="btn btn-primary flex-fill" type="submit">Filter</button>
         <a class="btn btn-outline-secondary" th:href="@{/admin/products}">Reset</a>
       </div>
@@ -70,10 +70,10 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:if="${#lists.isEmpty(products)}">
+        <tr th:if="${page.empty}">
           <td colspan="6" class="text-center text-secondary py-5">No products found</td>
         </tr>
-        <tr th:each="product : ${products}">
+        <tr th:each="product : ${page.content}">
           <td class="text-secondary" th:text="${product.id}">1</td>
           <td>
             <div class="fw-semibold" th:text="${product.name}">Product name</div>
@@ -97,30 +97,30 @@
       </table>
     </div>
     <div class="card-footer bg-white d-flex flex-wrap align-items-center justify-content-between gap-3"
-         th:if="${productPage.totalPages > 0}">
+         th:if="${page.totalPages > 0}">
       <span class="text-secondary small">
-        Showing page <span th:text="${productPage.page + 1}">1</span>
-        of <span th:text="${productPage.totalPages}">1</span>
-        (<span th:text="${productPage.totalElements}">0</span> products)
+        Showing page <span th:text="${page.number + 1}">1</span>
+        of <span th:text="${page.totalPages}">1</span>
+        (<span th:text="${page.totalElements}">0</span> products)
       </span>
-      <nav aria-label="Product pagination" th:if="${productPage.totalPages > 1}">
+      <nav aria-label="Product pagination" th:if="${page.totalPages > 1}">
         <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" th:classappend="${productPage.page == 0} ? 'disabled'">
+          <li class="page-item" th:classappend="${page.first} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/admin/products(name=${filter.name},active=${filter.active},page=${productPage.page - 1},size=${productPage.size})}">
+               th:href="@{/admin/products(name=${name},active=${active},page=${page.number - 1},size=${page.size})}">
               Previous
             </a>
           </li>
           <li class="page-item"
-              th:each="pageNumber : ${#numbers.sequence(0, productPage.totalPages - 1)}"
-              th:classappend="${pageNumber == productPage.page} ? 'active'">
+              th:each="pageNumber : ${#numbers.sequence(0, page.totalPages - 1)}"
+              th:classappend="${pageNumber == page.number} ? 'active'">
             <a class="page-link"
                th:text="${pageNumber + 1}"
-               th:href="@{/admin/products(name=${filter.name},active=${filter.active},page=${pageNumber},size=${productPage.size})}">1</a>
+               th:href="@{/admin/products(name=${name},active=${active},page=${pageNumber},size=${page.size})}">1</a>
           </li>
-          <li class="page-item" th:classappend="${productPage.last} ? 'disabled'">
+          <li class="page-item" th:classappend="${page.last} ? 'disabled'">
             <a class="page-link"
-               th:href="@{/admin/products(name=${filter.name},active=${filter.active},page=${productPage.page + 1},size=${productPage.size})}">
+               th:href="@{/admin/products(name=${name},active=${active},page=${page.number + 1},size=${page.size})}">
               Next
             </a>
           </li>

@@ -1,9 +1,9 @@
 package com.lantranle.order.controller;
 
 import com.lantranle.order.dto.OrderCreateRequest;
-import com.lantranle.order.dto.OrderDetailResponse;
 import com.lantranle.order.dto.OrderItemCreateRequest;
-import com.lantranle.order.dto.ProductListResponse;
+import com.lantranle.order.entity.Order;
+import com.lantranle.order.entity.Product;
 import com.lantranle.order.service.OrderService;
 import com.lantranle.order.service.ProductService;
 import jakarta.validation.Valid;
@@ -29,7 +29,7 @@ public class ShopController {
 
   @GetMapping("/products")
   public String getProductsPage(Model model) {
-    List<ProductListResponse> products = productService.listActiveProductsForShop();
+    List<Product> products = productService.listActiveProductsForShop();
     model.addAttribute("products", products);
     if (!model.containsAttribute("orderRequest")) {
       model.addAttribute("orderRequest", buildOrderRequest(products));
@@ -45,14 +45,14 @@ public class ShopController {
     Model model,
     RedirectAttributes redirectAttributes
   ) {
-    List<ProductListResponse> products = productService.listActiveProductsForShop();
+    List<Product> products = productService.listActiveProductsForShop();
     if (bindingResult.hasErrors()) {
       model.addAttribute("products", products);
       return "shop/products";
     }
 
     try {
-      OrderDetailResponse order = orderService.createOrder(request);
+      Order order = orderService.createOrder(request);
       redirectAttributes.addFlashAttribute("successMessage", "Order created successfully");
       return "redirect:/shop/orders/" + order.getId() + "/success";
     } catch (IllegalArgumentException exception) {
@@ -68,7 +68,7 @@ public class ShopController {
     return "shop/order-success";
   }
 
-  private OrderCreateRequest buildOrderRequest(List<ProductListResponse> products) {
+  private OrderCreateRequest buildOrderRequest(List<Product> products) {
     return OrderCreateRequest.builder()
       .items(products.stream()
         .map(product -> OrderItemCreateRequest.builder()

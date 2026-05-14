@@ -14,25 +14,8 @@ services:
     networks:
       - order_network
 
-  pgadmin:
-    image: dpage/pgadmin4:8
-    container_name: order-pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin_password
-    ports:
-      - "5050:80"
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    depends_on:
-      - postgres
-    networks:
-      - order_network
-
 volumes:
   postgres_data:
-  pgadmin_data:
 
 networks:
   order_network:

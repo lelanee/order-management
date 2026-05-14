@@ -3,16 +3,10 @@ package com.lantranle.order;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.lantranle.order.controller.ProductController;
 import com.lantranle.order.dto.OrderCreateRequest;
-import com.lantranle.order.dto.OrderDetailResponse;
 import com.lantranle.order.dto.OrderItemCreateRequest;
-import com.lantranle.order.dto.PageResponse;
-import com.lantranle.order.dto.ProductCreateRequest;
-import com.lantranle.order.dto.ProductDetailResponse;
-import com.lantranle.order.dto.ProductListRequest;
-import com.lantranle.order.dto.ProductListResponse;
-import com.lantranle.order.dto.ProductUpdateRequest;
+import com.lantranle.order.dto.ProductRequest;
+import com.lantranle.order.entity.Order;
 import com.lantranle.order.entity.OrderStatus;
 import com.lantranle.order.entity.Product;
 import com.lantranle.order.repository.OrderRepository;
@@ -24,6 +18,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest
@@ -40,9 +37,6 @@ class OrderApplicationTests {
 
 	@Autowired
 	private OrderService orderService;
-
-	@Autowired
-	private ProductController productController;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -74,7 +68,7 @@ class OrderApplicationTests {
 
 	@Test
 	void productServiceCanCreateUpdateAndDeleteProduct() {
-		ProductCreateRequest product = ProductCreateRequest.builder()
+		ProductRequest product = ProductRequest.builder()
 				.name("Service Product")
 				.description("Product for service test")
 				.price(BigDecimal.valueOf(15000))
@@ -82,11 +76,11 @@ class OrderApplicationTests {
 				.active(true)
 				.build();
 
-		ProductDetailResponse createdProduct = productService.createProduct(product);
+		Product createdProduct = productService.createProduct(product);
 
 		assertThat(createdProduct.getId()).isNotNull();
 
-		ProductUpdateRequest updateRequest = ProductUpdateRequest.builder()
+		ProductRequest updateRequest = ProductRequest.builder()
 				.name("Updated Service Product")
 				.description("Updated product for service test")
 				.price(BigDecimal.valueOf(20000))
@@ -95,7 +89,7 @@ class OrderApplicationTests {
 				.active(true)
 				.build();
 
-		ProductDetailResponse updatedProduct = productService.updateProduct(createdProduct.getId(), updateRequest);
+		Product updatedProduct = productService.updateProduct(createdProduct.getId(), updateRequest);
 
 		assertThat(updatedProduct.getName()).isEqualTo("Updated Service Product");
 		assertThat(updatedProduct.getPrice()).isEqualByComparingTo(BigDecimal.valueOf(20000));
@@ -105,47 +99,13 @@ class OrderApplicationTests {
 
 		assertThat(productService.getProductById(createdProduct.getId()).getActive()).isFalse();
 		assertThat(productService.listActiveProductsForShop())
-				.extracting(ProductListResponse::getId)
+				.extracting(Product::getId)
 				.doesNotContain(createdProduct.getId());
 	}
 
 	@Test
-	void productControllerCanCreateGetUpdateAndDeleteProduct() {
-		ProductCreateRequest product = ProductCreateRequest.builder()
-				.name("Controller Product")
-				.description("Product for controller test")
-				.price(BigDecimal.valueOf(30000))
-				.stockQuantity(12)
-				.active(true)
-				.build();
-
-		ProductDetailResponse createdProduct = productController.createProduct(product);
-
-		assertThat(createdProduct.getId()).isNotNull();
-		assertThat(productController.getProductById(createdProduct.getId()).getName())
-				.isEqualTo("Controller Product");
-
-		ProductUpdateRequest updateRequest = ProductUpdateRequest.builder()
-				.name("Updated Controller Product")
-				.description("Updated product for controller test")
-				.price(BigDecimal.valueOf(35000))
-				.stockQuantity(15)
-				.active(true)
-				.build();
-
-		ProductDetailResponse updatedProduct = productController.updateProduct(createdProduct.getId(), updateRequest);
-
-		assertThat(updatedProduct.getName()).isEqualTo("Updated Controller Product");
-		assertThat(updatedProduct.getActive()).isTrue();
-
-		productController.deleteProduct(createdProduct.getId());
-
-		assertThat(productController.getProductById(createdProduct.getId()).getActive()).isFalse();
-	}
-
-	@Test
 	void productServiceCanListProductsWithPaginationAndNameFilter() {
-		ProductCreateRequest product = ProductCreateRequest.builder()
+		ProductRequest product = ProductRequest.builder()
 				.name("Coca Cola")
 				.description("Product for pagination test")
 				.price(BigDecimal.valueOf(12000))
@@ -153,25 +113,24 @@ class OrderApplicationTests {
 				.active(true)
 				.build();
 
-		ProductDetailResponse createdProduct = productService.createProduct(product);
+		Product createdProduct = productService.createProduct(product);
 
-		ProductListRequest request = new ProductListRequest();
-		request.setName("coca");
-		request.setPage(0);
-		request.setSize(100);
+		Page<Product> response = productService.listProductsForAdmin(
+				PageRequest.of(0, 100, Sort.by("id").ascending()),
+				"coca",
+				null
+		);
 
-		PageResponse<ProductListResponse> response = productService.listProducts(request);
-
-		assertThat(response.getPage()).isZero();
+		assertThat(response.getNumber()).isZero();
 		assertThat(response.getSize()).isEqualTo(100);
 		assertThat(response.getContent())
-				.extracting(ProductListResponse::getId)
+				.extracting(Product::getId)
 				.contains(createdProduct.getId());
 	}
 
 	@Test
 	void productServiceSoftDeletesProduct() {
-		ProductCreateRequest product = ProductCreateRequest.builder()
+		ProductRequest product = ProductRequest.builder()
 				.name("Soft Delete Product")
 				.description("Product for soft delete test")
 				.price(BigDecimal.valueOf(50000))
@@ -179,7 +138,7 @@ class OrderApplicationTests {
 				.active(true)
 				.build();
 
-		ProductDetailResponse createdProduct = productService.createProduct(product);
+		Product createdProduct = productService.createProduct(product);
 
 		productService.deleteProduct(createdProduct.getId());
 
@@ -194,7 +153,7 @@ class OrderApplicationTests {
 
 	@Test
 	void orderServiceCanCreateOrderAndDecrementStock() {
-		ProductDetailResponse product = productService.createProduct(ProductCreateRequest.builder()
+		Product product = productService.createProduct(ProductRequest.builder()
 				.name("Order Product")
 				.description("Product for order happy path")
 				.price(BigDecimal.valueOf(25000))
@@ -202,7 +161,7 @@ class OrderApplicationTests {
 				.active(true)
 				.build());
 
-		OrderDetailResponse order = orderService.createOrder(orderRequest(product.getId(), 3));
+		Order order = orderService.createOrder(orderRequest(product.getId(), 3));
 
 		assertThat(order.getId()).isNotNull();
 		assertThat(order.getStatus()).isEqualTo(OrderStatus.PENDING);
@@ -217,7 +176,7 @@ class OrderApplicationTests {
 
 	@Test
 	void orderServiceRejectsInsufficientStock() {
-		ProductDetailResponse product = productService.createProduct(ProductCreateRequest.builder()
+		Product product = productService.createProduct(ProductRequest.builder()
 				.name("Low Stock Product")
 				.description("Product for stock validation")
 				.price(BigDecimal.valueOf(10000))
@@ -251,25 +210,25 @@ class OrderApplicationTests {
 
 	@Test
 	void orderServiceCanUpdateStatusAndFilterOrders() {
-		ProductDetailResponse product = productService.createProduct(ProductCreateRequest.builder()
+		Product product = productService.createProduct(ProductRequest.builder()
 				.name("Status Product")
 				.description("Product for status workflow")
 				.price(BigDecimal.valueOf(18000))
 				.stockQuantity(5)
 				.active(true)
 				.build());
-		OrderDetailResponse createdOrder = orderService.createOrder(orderRequest(product.getId(), 1));
+		Order createdOrder = orderService.createOrder(orderRequest(product.getId(), 1));
 
-		OrderDetailResponse updatedOrder = orderService.updateStatus(createdOrder.getId(), OrderStatus.CONFIRMED);
+		Order updatedOrder = orderService.updateStatus(createdOrder.getId(), OrderStatus.CONFIRMED);
 
 		assertThat(updatedOrder.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
 		assertThat(orderService.listOrders(OrderStatus.CONFIRMED))
-				.extracting("id")
+				.extracting(Order::getId)
 				.contains(createdOrder.getId());
 		assertThat(orderRepository.findById(createdOrder.getId()))
 				.isPresent()
 				.get()
-				.extracting(order -> order.getStatus())
+				.extracting(Order::getStatus)
 				.isEqualTo(OrderStatus.CONFIRMED);
 	}
 
@@ -291,5 +250,4 @@ class OrderApplicationTests {
 				.note("Test note")
 				.build();
 	}
-
 }

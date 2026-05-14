@@ -1,14 +1,11 @@
 package com.lantranle.order.service;
 
 import com.lantranle.order.dto.OrderCreateRequest;
-import com.lantranle.order.dto.OrderDetailResponse;
 import com.lantranle.order.dto.OrderItemCreateRequest;
-import com.lantranle.order.dto.OrderListResponse;
 import com.lantranle.order.entity.Order;
 import com.lantranle.order.entity.OrderItem;
 import com.lantranle.order.entity.OrderStatus;
 import com.lantranle.order.entity.Product;
-import com.lantranle.order.mapper.OrderMapper;
 import com.lantranle.order.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
@@ -26,25 +23,20 @@ public class OrderService {
 
   private final OrderRepository orderRepository;
   private final ProductService productService;
-  private final OrderMapper orderMapper;
 
   @Transactional(readOnly = true)
-  public List<OrderListResponse> listOrders(OrderStatus status) {
+  public List<Order> listOrders(OrderStatus status) {
     Sort sort = Sort.by("createdAt").descending();
-    List<Order> orders = status == null ? orderRepository.findAll(sort) : orderRepository.findByStatus(status, sort);
-
-    return orders.stream()
-      .map(orderMapper::toOrderListResponse)
-      .toList();
+    return status == null ? orderRepository.findAll(sort) : orderRepository.findByStatus(status, sort);
   }
 
   @Transactional(readOnly = true)
-  public OrderDetailResponse getOrderById(Long id) {
-    return orderMapper.toOrderDetailResponse(findOrderById(id));
+  public Order getOrderById(Long id) {
+    return findOrderById(id);
   }
 
   @Transactional
-  public OrderDetailResponse createOrder(OrderCreateRequest request) {
+  public Order createOrder(OrderCreateRequest request) {
     List<OrderItemCreateRequest> selectedItems = request.getItems().stream()
       .filter(item -> item.getQuantity() != null && item.getQuantity() > 0)
       .toList();
@@ -89,18 +81,18 @@ public class OrderService {
     order.setTotalAmount(totalAmount);
 
     try {
-      return orderMapper.toOrderDetailResponse(orderRepository.saveAndFlush(order));
+      return orderRepository.saveAndFlush(order);
     } catch (ObjectOptimisticLockingFailureException | OptimisticLockException exception) {
       throw new IllegalArgumentException("Product stock changed while creating the order. Please try again.");
     }
   }
 
   @Transactional
-  public OrderDetailResponse updateStatus(Long id, OrderStatus status) {
+  public Order updateStatus(Long id, OrderStatus status) {
     Order order = findOrderById(id);
     order.setStatus(status);
 
-    return orderMapper.toOrderDetailResponse(orderRepository.save(order));
+    return orderRepository.save(order);
   }
 
   private Order findOrderById(Long id) {

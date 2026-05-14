@@ -1,14 +1,13 @@
 package com.lantranle.order.controller;
 
-import com.lantranle.order.dto.ProductCreateRequest;
-import com.lantranle.order.dto.ProductDetailResponse;
-import com.lantranle.order.dto.ProductListRequest;
-import com.lantranle.order.dto.ProductUpdateRequest;
-import com.lantranle.order.dto.PageResponse;
-import com.lantranle.order.dto.ProductListResponse;
+import com.lantranle.order.dto.ProductRequest;
+import com.lantranle.order.entity.Product;
 import com.lantranle.order.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -27,18 +27,24 @@ public class AdminProductController {
   private final ProductService productService;
 
   @GetMapping
-  public String listProducts(@Valid @ModelAttribute("filter") ProductListRequest filter, Model model) {
-    PageResponse<ProductListResponse> productPage = productService.listProducts(filter);
+  public String listProducts(
+    @RequestParam(required = false) String name,
+    @RequestParam(required = false) Boolean active,
+    @PageableDefault(size = 10, sort = "id") Pageable pageable,
+    Model model
+  ) {
+    Page<Product> page = productService.listProductsForAdmin(pageable, name, active);
 
-    model.addAttribute("productPage", productPage);
-    model.addAttribute("products", productPage.getContent());
+    model.addAttribute("page", page);
+    model.addAttribute("name", name);
+    model.addAttribute("active", active);
     return "admin/products";
   }
 
   @GetMapping("/new")
   public String getCreateProductPage(Model model) {
     if (!model.containsAttribute("product")) {
-      model.addAttribute("product", ProductCreateRequest.builder().active(true).build());
+      model.addAttribute("product", ProductRequest.builder().active(true).build());
     }
 
     model.addAttribute("formAction", "/admin/products");
@@ -48,7 +54,7 @@ public class AdminProductController {
 
   @PostMapping
   public String createProduct(
-    @Valid @ModelAttribute("product") ProductCreateRequest request,
+    @Valid @ModelAttribute("product") ProductRequest request,
     BindingResult bindingResult,
     Model model,
     RedirectAttributes redirectAttributes
@@ -74,7 +80,7 @@ public class AdminProductController {
   @GetMapping("/{id}/edit")
   public String getEditProductPage(@PathVariable Long id, Model model) {
     if (!model.containsAttribute("product")) {
-      model.addAttribute("product", toUpdateRequest(productService.getProductById(id)));
+      model.addAttribute("product", toRequest(productService.getProductById(id)));
     }
 
     model.addAttribute("productId", id);
@@ -86,7 +92,7 @@ public class AdminProductController {
   @PostMapping("/{id}")
   public String updateProduct(
     @PathVariable Long id,
-    @Valid @ModelAttribute("product") ProductUpdateRequest request,
+    @Valid @ModelAttribute("product") ProductRequest request,
     BindingResult bindingResult,
     Model model,
     RedirectAttributes redirectAttributes
@@ -111,8 +117,8 @@ public class AdminProductController {
     return "redirect:/admin/products";
   }
 
-  private ProductUpdateRequest toUpdateRequest(ProductDetailResponse product) {
-    return ProductUpdateRequest.builder()
+  private ProductRequest toRequest(Product product) {
+    return ProductRequest.builder()
       .name(product.getName())
       .description(product.getDescription())
       .price(product.getPrice())

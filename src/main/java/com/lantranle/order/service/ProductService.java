@@ -1,22 +1,13 @@
 package com.lantranle.order.service;
 
-import com.lantranle.order.dto.ProductCreateRequest;
-import com.lantranle.order.dto.PageResponse;
-import com.lantranle.order.dto.ProductDetailResponse;
-import com.lantranle.order.dto.ProductListRequest;
-import com.lantranle.order.dto.ProductListResponse;
-import com.lantranle.order.dto.ProductUpdateRequest;
+import com.lantranle.order.dto.ProductRequest;
 import com.lantranle.order.entity.Product;
-import com.lantranle.order.mapper.ProductMapper;
 import com.lantranle.order.repository.ProductRepository;
-import com.lantranle.order.repository.ProductSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,31 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
   private final ProductRepository productRepository;
-  private final ProductMapper productMapper;
 
   @Transactional(readOnly = true)
-  public PageResponse<ProductListResponse> listProducts(ProductListRequest request) {
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by("id").ascending());
-    Page<ProductListResponse> products = productRepository.findAll(ProductSpecification.filterBy(request), pageable)
-      .map(productMapper::toProductListResponse);
-
-    return PageResponse.from(products);
+  public Page<Product> listProductsForAdmin(Pageable pageable, String name, Boolean active) {
+    return productRepository.search(name, active, pageable);
   }
 
   @Transactional(readOnly = true)
-  public List<ProductListResponse> listActiveProductsForShop() {
-    ProductListRequest request = new ProductListRequest();
-    request.setActive(true);
-    request.setSize(Integer.MAX_VALUE);
-
-    return productRepository.findAll(ProductSpecification.filterBy(request), Sort.by("id").ascending()).stream()
-      .map(productMapper::toProductListResponse)
-      .toList();
+  public List<Product> listActiveProductsForShop() {
+    return productRepository.findByActiveTrueOrderByIdAsc();
   }
 
   @Transactional(readOnly = true)
-  public ProductDetailResponse getProductById(Long id) {
-    return productMapper.toProductDetailResponse(findProductById(id));
+  public Product getProductById(Long id) {
+    return findProductById(id);
   }
 
   @Transactional(readOnly = true)
@@ -63,19 +43,31 @@ public class ProductService {
   }
 
   @Transactional
-  public ProductDetailResponse createProduct(ProductCreateRequest request) {
-    Product product = productMapper.toProduct(request);
+  public Product createProduct(ProductRequest request) {
+    Product product = Product.builder()
+      .name(request.getName())
+      .description(request.getDescription())
+      .price(request.getPrice())
+      .stockQuantity(request.getStockQuantity())
+      .imageUrl(request.getImageUrl())
+      .active(Boolean.TRUE.equals(request.getActive()))
+      .build();
 
-    return productMapper.toProductDetailResponse(productRepository.save(product));
+    return productRepository.save(product);
   }
 
   @Transactional
-  public ProductDetailResponse updateProduct(Long id, ProductUpdateRequest request) {
+  public Product updateProduct(Long id, ProductRequest request) {
     Product existingProduct = findProductById(id);
 
-    productMapper.updateProduct(existingProduct, request);
+    existingProduct.setName(request.getName());
+    existingProduct.setDescription(request.getDescription());
+    existingProduct.setPrice(request.getPrice());
+    existingProduct.setStockQuantity(request.getStockQuantity());
+    existingProduct.setImageUrl(request.getImageUrl());
+    existingProduct.setActive(Boolean.TRUE.equals(request.getActive()));
 
-    return productMapper.toProductDetailResponse(productRepository.save(existingProduct));
+    return productRepository.save(existingProduct);
   }
 
   @Transactional
