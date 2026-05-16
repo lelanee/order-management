@@ -8,6 +8,10 @@ import com.lantranle.order.service.OrderService;
 import com.lantranle.order.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,8 +33,13 @@ public class ShopController {
   private final CartService cartService;
 
   @GetMapping("/products")
-  public String getProductsPage(Model model) {
-    model.addAttribute("products", productService.listActiveProductsForShop());
+  public String getProductsPage(
+    @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.ASC) Pageable pageable,
+    Model model
+  ) {
+    Page<com.lantranle.order.entity.Product> page = productService.listActiveProductsForShop(pageable);
+    model.addAttribute("page", page);
+    model.addAttribute("products", page.getContent());
     return "shop/products";
   }
 

@@ -31,7 +31,8 @@
       </div>
       <div class="col-md-6">
         <label class="form-label" for="imageUrl">Image URL</label>
-        <input class="form-control" id="imageUrl" type="url" th:field="*{imageUrl}">
+        <input class="form-control" id="imageUrl" type="text" th:field="*{imageUrl}"
+               placeholder="/images/products/coca-cola.svg">
         <div class="text-danger small mt-1" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
       </div>
       <div class="col-12">

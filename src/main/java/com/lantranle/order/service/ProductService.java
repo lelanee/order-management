@@ -12,6 +12,8 @@ public interface ProductService {
 
   List<Product> listActiveProductsForShop();
 
+  Page<Product> listActiveProductsForShop(Pageable pageable);
+
   Product getProductById(Long id);
 
   Product getActiveProductEntityById(Long id);

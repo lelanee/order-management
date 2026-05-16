@@ -5,15 +5,15 @@
   <title>Shop Products</title>
 </head>
 <body>
-<main class="container py-4">
-  <section class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+<main class="container py-4 shop-page">
+  <section class="shop-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
-      <p class="text-uppercase text-secondary small fw-semibold mb-1">Shop</p>
+      <p class="text-uppercase small fw-semibold mb-1">7-Eleven Official Goods</p>
       <h1 class="h3 mb-0">Products</h1>
     </div>
-    <a class="btn btn-outline-primary" th:href="@{/shop/cart}">
+    <a class="btn btn-outline-success cart-link" th:href="@{/shop/cart}">
       <i class="bi bi-cart3 me-1"></i>View cart
-      <span class="badge text-bg-primary ms-1" th:text="${cartItemCount}">0</span>
+      <span class="badge text-bg-success ms-1" th:text="${cartItemCount}">0</span>
     </a>
   </section>
 
@@ -31,14 +31,14 @@
         <h2 class="h6" th:text="${product.name}">Product name</h2>
         <p class="text-secondary small flex-grow-1" th:text="${product.description} ?: 'No description'">Description</p>
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="fw-semibold" th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'NONE')} + ' ₫'">0 ₫</span>
+          <span class="product-price" th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'NONE')} + ' ₫'">0 ₫</span>
           <span class="text-secondary small" th:text="'Stock: ' + ${product.stockQuantity}">Stock: 0</span>
         </div>
         <form th:action="@{/shop/cart/add}" method="post" data-submit-spinner>
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
           <input type="hidden" name="productId" th:value="${product.id}">
           <input type="hidden" name="quantity" value="1">
-          <button class="btn btn-success w-100" type="submit" data-spinner-target
+          <button class="btn btn-success btn-711 w-100" type="submit" data-spinner-target
                   th:disabled="${product.stockQuantity == 0}">
             <span class="spinner-border spinner-border-sm d-none me-2" aria-hidden="true"></span>
             <span data-label><i class="bi bi-cart-plus me-1"></i>Add to cart</span>
@@ -46,6 +46,31 @@
         </form>
       </div>
     </article>
+  </section>
+
+  <section class="shop-pagination d-flex flex-wrap align-items-center justify-content-between gap-3 mt-4"
+           th:if="${page != null and page.totalPages > 0}">
+    <span class="text-secondary small">
+      Page <span th:text="${page.number + 1}">1</span>
+      of <span th:text="${page.totalPages}">1</span>
+      (<span th:text="${page.totalElements}">0</span> products)
+    </span>
+    <nav aria-label="Shop product pagination" th:if="${page.totalPages > 1}">
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+          <a class="page-link" th:href="@{/shop/products(page=${page.number - 1},size=${page.size})}">Previous</a>
+        </li>
+        <li class="page-item"
+            th:each="pageNumber : ${#numbers.sequence(T(java.lang.Math).max(0, page.number - 2), T(java.lang.Math).min(page.totalPages - 1, page.number + 2))}"
+            th:classappend="${pageNumber == page.number} ? 'active'">
+          <a class="page-link" th:text="${pageNumber + 1}"
+             th:href="@{/shop/products(page=${pageNumber},size=${page.size})}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+          <a class="page-link" th:href="@{/shop/products(page=${page.number + 1},size=${page.size})}">Next</a>
+        </li>
+      </ul>
+    </nav>
   </section>
 
   <section class="text-center py-5" th:if="${products.isEmpty()}">

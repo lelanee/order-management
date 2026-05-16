@@ -35,8 +35,18 @@
       </div>
 
       <div class="small text-secondary mt-4">
-        <div>Admin: admin / admin123</div>
-        <div>User: user / user123</div>
+        <div>
+          Admin:
+          <span th:text="${demoAdminUsername}"></span>
+          /
+          <span th:text="${demoAdminPassword}"></span>
+        </div>
+        <div>
+          User:
+          <span th:text="${demoUserUsername}"></span>
+          /
+          <span th:text="${demoUserPassword}"></span>
+        </div>
       </div>
     </div>
   </section>

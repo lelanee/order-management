@@ -31,6 +31,12 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   @Transactional(readOnly = true)
+  public Page<Product> listActiveProductsForShop(Pageable pageable) {
+    return productRepository.findByActiveTrueOrderByIdAsc(pageable);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public Product getProductById(Long id) {
     return findProductById(id);
   }

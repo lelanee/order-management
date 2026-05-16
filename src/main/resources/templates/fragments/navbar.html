@@ -1,9 +1,9 @@
-<nav class="navbar navbar-expand-lg bg-white border-bottom" xmlns:th="http://www.thymeleaf.org"
+<nav class="navbar navbar-expand-lg site-navbar" xmlns:th="http://www.thymeleaf.org"
      xmlns:sec="https://www.thymeleaf.org/extras/spring-security" th:fragment="navbar"
      sec:authorize="isAuthenticated()">
   <div class="container">
-    <a class="navbar-brand fw-semibold" th:href="@{/shop/products}">
-      <i class="bi bi-bag-check me-1"></i> Order Shop
+    <a class="navbar-brand brand-711" th:href="@{/shop/products}">
+      <span class="brand-mark">7</span><span>Eleven</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
             aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
