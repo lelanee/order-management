@@ -1,49 +1,33 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page(~{::title}, ~{::main})}">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Product detail</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white border-bottom">
-  <div class="container">
-    <a class="navbar-brand fw-semibold" th:href="@{/admin/products}">Order Admin</a>
-    <div class="navbar-nav ms-auto align-items-lg-center">
-      <a class="nav-link active" th:href="@{/admin/products}">Products</a>
-      <a class="nav-link" th:href="@{/admin/orders}">Orders</a>
-      <form th:action="@{/logout}" method="post" class="ms-lg-3">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-        <button class="btn btn-sm btn-outline-secondary" type="submit">Logout</button>
-      </form>
-    </div>
-  </div>
-</nav>
-
 <main class="container py-4">
-  <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
-      <a class="text-decoration-none" th:href="@{/admin/products}">Back to products</a>
+      <a class="text-decoration-none" th:href="@{/admin/products}"><i class="bi bi-arrow-left me-1"></i>Back to products</a>
       <h1 class="h3 mt-2 mb-0" th:text="${product.name}">Product name</h1>
     </div>
-    <a class="btn btn-primary" th:href="@{/admin/products/{id}/edit(id=${product.id})}">Edit product</a>
+    <a class="btn btn-primary" th:href="@{/admin/products/{id}/edit(id=${product.id})}">
+      <i class="bi bi-pencil me-1"></i>Edit product
+    </a>
   </div>
 
   <section class="card">
     <div class="card-body row g-4">
       <div class="col-md-4">
         <img class="product-image" th:if="${product.imageUrl}" th:src="${product.imageUrl}" alt="">
-        <div class="image-placeholder" th:unless="${product.imageUrl}">No image</div>
+        <div class="image-placeholder" th:unless="${product.imageUrl}"><i class="bi bi-image fs-2"></i></div>
       </div>
       <div class="col-md-8">
         <dl class="row mb-0">
           <dt class="col-sm-3">ID</dt>
           <dd class="col-sm-9" th:text="${product.id}">1</dd>
           <dt class="col-sm-3">Price</dt>
-          <dd class="col-sm-9" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</dd>
+          <dd class="col-sm-9" th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'NONE')} + ' ₫'">0 ₫</dd>
           <dt class="col-sm-3">Stock</dt>
           <dd class="col-sm-9" th:text="${product.stockQuantity}">0</dd>
           <dt class="col-sm-3">Status</dt>

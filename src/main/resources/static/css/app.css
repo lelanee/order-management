@@ -54,6 +54,12 @@ body {
 
 .product-card {
   overflow: hidden;
+  transition: box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.product-card:hover {
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
 }
 
 .product-thumb,
@@ -74,4 +80,26 @@ body {
   color: #6b7280;
   display: flex;
   justify-content: center;
+}
+
+.cart-thumb {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  flex: 0 0 56px;
+  height: 56px;
+  object-fit: cover;
+  width: 56px;
+}
+
+.quantity-control {
+  max-width: 140px;
+}
+
+.checkout-summary {
+  position: sticky;
+  top: 24px;
+}
+
+.toast-container {
+  z-index: 1080;
 }

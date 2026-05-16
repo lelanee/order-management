@@ -112,8 +112,8 @@ public class AdminProductController {
   }
 
   @PostMapping("/{id}/delete")
-  public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-    productService.deleteProduct(id);
+  public String deactivateProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    productService.deactivateProduct(id);
     redirectAttributes.addFlashAttribute("successMessage", "Product deleted successfully");
     return "redirect:/admin/products";
   }

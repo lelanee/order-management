@@ -148,7 +148,7 @@ class OrderApplicationTests {
 		assertThat(updatedProduct.getPrice()).isEqualByComparingTo(BigDecimal.valueOf(20000));
 		assertThat(updatedProduct.getActive()).isTrue();
 
-		productService.deleteProduct(createdProduct.getId());
+		productService.deactivateProduct(createdProduct.getId());
 
 		assertThat(productService.getProductById(createdProduct.getId()).getActive()).isFalse();
 		assertThat(productService.listActiveProductsForShop())
@@ -193,7 +193,7 @@ class OrderApplicationTests {
 
 		Product createdProduct = productService.createProduct(product);
 
-		productService.deleteProduct(createdProduct.getId());
+		productService.deactivateProduct(createdProduct.getId());
 
 		assertThat(productService.getProductById(createdProduct.getId()).getActive()).isFalse();
 		assertThat(productRepository.findById(createdProduct.getId())).isPresent();
@@ -275,7 +275,8 @@ class OrderApplicationTests {
 		Order updatedOrder = orderService.updateStatus(createdOrder.getId(), OrderStatus.CONFIRMED);
 
 		assertThat(updatedOrder.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
-		assertThat(orderService.listOrders(OrderStatus.CONFIRMED))
+		Page<Order> confirmedOrders = orderService.listOrders(OrderStatus.CONFIRMED, PageRequest.of(0, 10));
+		assertThat(confirmedOrders.getContent())
 				.extracting(Order::getId)
 				.contains(createdOrder.getId());
 		assertThat(orderRepository.findById(createdOrder.getId()))

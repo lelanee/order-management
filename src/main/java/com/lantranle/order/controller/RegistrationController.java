@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +42,12 @@ public class RegistrationController {
     return "register";
   }
 
+  /**
+   * Registers a user account, stores an encoded password, assigns the USER role,
+   * and signs the new user into the current HTTP session after a successful save.
+   */
   @PostMapping
+  @Transactional
   public String register(
     @Valid @ModelAttribute("registerRequest") RegisterRequest request,
     BindingResult bindingResult,

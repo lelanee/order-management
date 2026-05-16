@@ -1,0 +1,7 @@
+<span xmlns:th="http://www.thymeleaf.org"
+      th:fragment="orderStatus(status)"
+      th:class="${'badge ' + (status.name() == 'PENDING' ? 'text-bg-warning' :
+        (status.name() == 'CONFIRMED' ? 'text-bg-info' :
+        (status.name() == 'SHIPPED' ? 'text-bg-primary' :
+        (status.name() == 'DELIVERED' ? 'text-bg-success' : 'text-bg-secondary'))))}"
+      th:text="${status}">PENDING</span>

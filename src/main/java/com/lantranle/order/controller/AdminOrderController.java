@@ -3,6 +3,9 @@ package com.lantranle.order.controller;
 import com.lantranle.order.entity.OrderStatus;
 import com.lantranle.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +23,12 @@ public class AdminOrderController {
   private final OrderService orderService;
 
   @GetMapping
-  public String listOrders(@RequestParam(required = false) OrderStatus status, Model model) {
-    model.addAttribute("orders", orderService.listOrders(status));
+  public String listOrders(
+    @RequestParam(required = false) OrderStatus status,
+    @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+    Model model
+  ) {
+    model.addAttribute("page", orderService.listOrders(status, pageable));
     model.addAttribute("selectedStatus", status);
     model.addAttribute("statuses", OrderStatus.values());
     return "admin/orders";

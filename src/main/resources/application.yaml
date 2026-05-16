@@ -1,14 +1,20 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
-    name: order
+    name: ${APP_NAME:order}
   datasource:
-    url: jdbc:postgresql://localhost:5432/order_db
+    url: ${DATABASE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:order_db}}
     username: ${DB_USER:order_user}
     password: ${DB_PASSWORD:order_password}
   jpa:
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     properties:
       hibernate:
-        format_sql: true
+        format_sql: ${HIBERNATE_FORMAT_SQL:true}
+
+server:
+  port: ${SERVER_PORT:8080}
 
