@@ -1,58 +1,41 @@
 # Order Management
 
-Spring Boot order-management demo for product administration, shop checkout, and admin order review.
+A Spring Boot web application for managing a small online store: customers browse products and place orders, while admins manage the catalog and review incoming orders.
 
-## Requirements
+## Live Demo
 
-- Java 21
-- Docker and Docker Compose, for local PostgreSQL
-- Maven wrapper included in the project
+Try it here: **[order-management-u2e1.onrender.com](https://order-management-u2e1.onrender.com/login)**
 
-## Setup
+## Tech Stack
 
-Copy the sample environment file and adjust values if needed:
+- **Language / Runtime:** Java 21
+- **Framework:** Spring Boot 4.0.x (Spring MVC, Spring Security, Spring Data JPA, Bean Validation)
+- **View:** Thymeleaf (server-rendered HTML) + `thymeleaf-extras-springsecurity6`
+- **Database:** PostgreSQL 16
+- **Tooling:** Maven Wrapper, Lombok, multi-stage Dockerfile
 
-```bash
-cp .env.example .env
-```
+## Architecture
 
-Start PostgreSQL:
+Standard layered Spring MVC app. All code lives under `com.lantranle.order`:
 
-```bash
-docker compose up -d
-```
+| Package       | Responsibility                                                                                                                    |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `controller/` | HTTP entry points: `HomeController`, `ShopController`, `RegistrationController`, `AdminProductController`, `AdminOrderController` |
+| `service/`    | Business logic: `ProductService`, `OrderService`                                                                                  |
+| `repository/` | Spring Data JPA repositories for `User`, `Product`, `Order`                                                                       |
+| `entity/`     | JPA entities (`User`, `Product`, `Order`, `OrderItem`) and enums (`UserRole`, `OrderStatus`)                                      |
+| `dto/`        | Form and view models (requests, error responses, cart views)                                                                      |
+| `cart/`       | Session-scoped shopping cart (`Cart`, `CartService`), exposed to views via `config/CartAdvice`                                    |
+| `config/`     | `SecurityConfig` (form login + role-based access), `DataInitializer` (seeds demo data on first run)                               |
+| `exception/`  | `GlobalExceptionHandler` for centralized error handling                                                                           |
 
-Run the application:
+Templates live in `src/main/resources/templates/`, static assets in `src/main/resources/static/`.
 
-```bash
-sh mvnw spring-boot:run
-```
+## Main Routes
 
-Open `http://localhost:8080`.
-
-## Demo Accounts
-
-The demo data initializer is enabled by default with `APP_DEMO_ENABLED=true`.
-
-| Role | Username | Password |
+| Route | Audience | Purpose |
 | --- | --- | --- |
-| Admin | `admin` | value of `DEMO_ADMIN_PASSWORD` in `.env` |
-| User | `user` | value of `DEMO_USER_PASSWORD` in `.env` |
+| `/shop/products` | Customer | Browse catalog, add to cart, checkout |
+| `/admin/products` | Admin | Create / update / delete products |
+| `/admin/orders` | Admin | Review submitted orders |
 
-To run without demo seed data, set:
-
-```properties
-APP_DEMO_ENABLED=false
-```
-
-## Main Flows
-
-- Admin product management: `/admin/products`
-- User product listing and checkout: `/shop/products`
-- Admin order viewing: `/admin/orders`
-
-## Tests
-
-```bash
-sh mvnw test
-```
